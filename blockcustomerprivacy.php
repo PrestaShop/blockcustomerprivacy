@@ -26,7 +26,7 @@
 
 if (!defined('_PS_VERSION_'))
 	exit;
-	
+
 class Blockcustomerprivacy extends Module
 {
 	public function __construct()
@@ -39,25 +39,41 @@ class Blockcustomerprivacy extends Module
 		$this->version = '1.1.2';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
-			
+
 		$this->bootstrap = true;
-		parent::__construct();	
+		parent::__construct();
 
 		$this->displayName = $this->l('Customer data privacy block');
 		$this->description = $this->l('Adds a block displaying a message about a customer\'s privacy data.');
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
 	}
-	
+
 	public function install()
-	{	
-		$return = (parent::install() && $this->registerHook('createAccountForm') && $this->registerHook('header') && $this->registerHook('actionBeforeSubmitAccount'));
-		Configuration::updateValue('CUSTPRIV_MESSAGE', array($this->context->language->id => 
-			$this->l('The personal data you provide is used to answer queries, process orders or allow access to specific information.').' '.
-			$this->l('You have the right to modify and delete all the personal information found in the "My Account" page.')
-		));
+	{
+		$return = (parent::install()
+					&& $this->registerHook('createAccountForm')
+					&& $this->registerHook('header')
+					&& $this->registerHook('actionBeforeSubmitAccount'));
+
+		if (version_compare(_PS_VERSION_, '1.6.0.11', '>=') === true)
+			$return &= $this->registerHook('displayCustomerIdentityForm');
+
+		include 'fixtures.php';
+		$languages = Language::getLanguages();
+		foreach ($languages as $lang)
+		{
+			if (isset($fixtures[$lang['language_code']]))
+				Configuration::updateValue('CUSTPRIV_MESSAGE', array(
+					$lang['id_lang'] => $fixtures[$lang['language_code']]
+				));
+			else
+				Configuration::updateValue('CUSTPRIV_MESSAGE', array(
+					$lang['id_lang'] => 'The personal data you provide is used to answer queries, process orders or allow access to specific information. You have the right to modify and delete all the personal information found in the "My Account" page.'
+				));
+		}
 		return $return;
 	}
-	
+
 	public function getContent()
 	{
 		$id_lang_default = (int)Configuration::get('PS_LANG_DEFAULT');
@@ -76,50 +92,67 @@ class Blockcustomerprivacy extends Module
 				}
 			Configuration::updateValue('CUSTPRIV_MESSAGE', $message_trads, true);
 			$this->_clearCache('blockcustomerprivacy.tpl');
+			$this->_clearCache('blockcustomerprivacy-simple.tpl');
 			$output .= $this->displayConfirmation($this->l('Configuration updated'));
-		}		
-		
+		}
+
 		return $output.$this->renderForm();
 	}
-	
+
 	public function checkConfig()
 	{
 		if (!$this->active)
 			return false;
-		
+
 		$message = Configuration::get('CUSTPRIV_MESSAGE', $this->context->language->id);
 		if (empty($message))
 			return false;
-		
+
 		return true;
 	}
-	
+
 	public function hookHeader($params)
 	{
 		if (!$this->checkConfig())
 			return;
 		$this->context->controller->addJS($this->_path.'blockcustomerprivacy.js');
 	}
-	
+
 	public function hookActionBeforeSubmitAccount($params)
 	{
 		if (!$this->checkConfig())
 			return;
-		
+
 		if (!Tools::getValue('customer_privacy'))
 			$this->context->controller->errors[] = $this->l('If you agree to the terms in the Customer Data Privacy message, please click the check box below.');
 	}
-	
+
 	public function hookCreateAccountForm($params)
 	{
 		if (!$this->checkConfig())
 			return;
 		if (!$this->isCached('blockcustomerprivacy.tpl', $this->getCacheId()))
 			$this->smarty->assign('privacy_message', Configuration::get('CUSTPRIV_MESSAGE', $this->context->language->id));
-		
+
 		return $this->display(__FILE__, 'blockcustomerprivacy.tpl', $this->getCacheId());
 	}
-	
+
+	public function hookDisplayCustomerIdentityForm($params)
+	{
+		if (!$this->checkConfig())
+			return;
+
+		if (!$this->isCached('blockcustomerprivacy-simple.tpl', $this->getCacheId()))
+		{
+			$this->smarty->assign(array(
+					'privacy_message' => Configuration::get('CUSTPRIV_MESSAGE', $this->context->language->id),
+					'privacy_id' => "blockcustomerprivacy-simple",
+				));
+		}
+
+		return $this->display(__FILE__, 'blockcustomerprivacy-simple.tpl', $this->getCacheId());
+	}
+
 	public function renderForm()
 	{
 		$fields_form = array(
@@ -143,7 +176,7 @@ class Blockcustomerprivacy extends Module
 				)
 			),
 		);
-		
+
 		$helper = new HelperForm();
 		$helper->show_toolbar = false;
 		$helper->table =  $this->table;
@@ -164,7 +197,7 @@ class Blockcustomerprivacy extends Module
 
 		return $helper->generateForm(array($fields_form));
 	}
-	
+
 	public function getConfigFieldsValues()
 	{
 		$return = array();

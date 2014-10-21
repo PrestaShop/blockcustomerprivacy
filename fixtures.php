@@ -1,0 +1,5 @@
+<?php
+
+$fixtures = array(
+	'fr-fr' => "Conformément aux dispositions de la loi du n°78-17 du 6 janvier 1978, vous disposez d'un droit d'accès, de rectification et d'opposition sur les données nominatives vous concernant.",
+);
