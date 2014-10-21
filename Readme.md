@@ -2,7 +2,7 @@
 
 ## About
 
-Adds a block displaying a message about a customer\'s privacy data.
+Adds a block displaying a message about a customer's privacy data.
 
 ## Contributing
 
