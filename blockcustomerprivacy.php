@@ -91,6 +91,10 @@ class Blockcustomerprivacy extends Module
 					$message_trads[(int)$id_lang[1]] = $value;
 				}
 			Configuration::updateValue('CUSTPRIV_MESSAGE', $message_trads, true);
+
+			Configuration::updateValue('CUSTPRIV_AUTH_PAGE', (int)Tools::getValue('custpriv_auth_page'));
+			Configuration::updateValue('CUSTPRIV_IDENTITY_PAGE', (int)Tools::getValue('custpriv_identity_page'));
+
 			$this->_clearCache('blockcustomerprivacy.tpl');
 			$this->_clearCache('blockcustomerprivacy-simple.tpl');
 			$output .= $this->displayConfirmation($this->l('Configuration updated'));
@@ -129,7 +133,7 @@ class Blockcustomerprivacy extends Module
 
 	public function hookCreateAccountForm($params)
 	{
-		if (!$this->checkConfig())
+		if (!$this->checkConfig() || !Configuration::get('CUSTPRIV_AUTH_PAGE'))
 			return;
 		if (!$this->isCached('blockcustomerprivacy.tpl', $this->getCacheId()))
 			$this->smarty->assign('privacy_message', Configuration::get('CUSTPRIV_MESSAGE', $this->context->language->id));
@@ -139,7 +143,7 @@ class Blockcustomerprivacy extends Module
 
 	public function hookDisplayCustomerIdentityForm($params)
 	{
-		if (!$this->checkConfig())
+		if (!$this->checkConfig() || !Configuration::get('CUSTPRIV_IDENTITY_PAGE'))
 			return;
 
 		if (!$this->isCached('blockcustomerprivacy-simple.tpl', $this->getCacheId()))
@@ -162,6 +166,40 @@ class Blockcustomerprivacy extends Module
 					'icon' => 'icon-cogs'
 				),
 				'input' => array(
+					array(
+						'type' => 'switch',
+						'label' => $this->l('Display on account creation form'),
+						'name' => 'custpriv_auth_page',
+						'values' => array(
+									array(
+										'id' => 'active_on',
+										'value' => 1,
+										'label' => $this->l('Enabled')
+									),
+									array(
+										'id' => 'active_off',
+										'value' => 0,
+										'label' => $this->l('Disabled')
+									)
+								),
+					),
+					array(
+						'type' => 'switch',
+						'label' => $this->l('Display on identity (profile) page'),
+						'name' => 'custpriv_identity_page',
+						'values' => array(
+									array(
+										'id' => 'active_on',
+										'value' => 1,
+										'label' => $this->l('Enabled')
+									),
+									array(
+										'id' => 'active_off',
+										'value' => 0,
+										'label' => $this->l('Disabled')
+									)
+								),
+					),
 					array(
 						'type' => 'textarea',
 						'lang' => true,
@@ -201,6 +239,10 @@ class Blockcustomerprivacy extends Module
 	public function getConfigFieldsValues()
 	{
 		$return = array();
+
+		$return['custpriv_auth_page'] = (int)Configuration::get('CUSTPRIV_AUTH_PAGE');
+		$return['custpriv_identity_page'] = (int)Configuration::get('CUSTPRIV_IDENTITY_PAGE');
+
 		foreach (Language::getLanguages(false) as $lang)
 			$return['custpriv_message'][(int)$lang['id_lang']] = Tools::getValue('custpriv_message_'.(int)$lang['id_lang'], Configuration::get('CUSTPRIV_MESSAGE', (int)$lang['id_lang']));
 
