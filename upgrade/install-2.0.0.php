@@ -5,8 +5,18 @@ if (!defined('_PS_VERSION_'))
 
 function upgrade_module_2_0_0($object)
 {
-	if (version_compare(_PS_VERSION_, '1.6.0.11', '>=') === true)
-		return $this->registerHook('displayCustomerIdentityForm');
+	$return = true;
 
-	return true;
+	$return &= $this->registerHook('displayCustomerIdentityForm');
+	$return &= $this->unregisterHook('header');
+
+	$langs = Language::getLanguages(false);
+	$old_messages = array();
+	foreach ($langs as $l)
+		$old_messages[$l['id_lang']] = Configuration::get('CUSTPRIV_MESSAGE', $l['id_lang']);
+
+	Configuration::updateValue('CUSTPRIV_MESSAGE', $old_messages);
+	Configuration::updateValue('CUSTPRIV_MESSAGE', $old_messages);
+
+	return $return;
 }
