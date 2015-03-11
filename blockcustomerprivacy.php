@@ -60,10 +60,6 @@ class Blockcustomerprivacy extends Module
 	
 	public function getContent()
 	{
-		$id_lang_default = (int)Configuration::get('PS_LANG_DEFAULT');
-		$languages = Language::getLanguages(false);
-		$iso = $this->context->language->iso_code;
-
 		$output = '';
 		if (Tools::isSubmit('submitCustPrivMess'))
 		{
