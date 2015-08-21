@@ -36,7 +36,7 @@ class Blockcustomerprivacy extends Module
 			$this->tab = 'front_office_features';
 		else
 			$this->tab = 'Blocks';
-		$this->version = '2.0.0';
+		$this->version = '2.0.1';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
 
