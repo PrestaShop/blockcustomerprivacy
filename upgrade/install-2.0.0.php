@@ -7,8 +7,8 @@ function upgrade_module_2_0_0($object)
 {
 	$return = true;
 
-	$return &= $this->registerHook('displayCustomerIdentityForm');
-	$return &= $this->unregisterHook('header');
+	$return &= $object->registerHook('displayCustomerIdentityForm');
+	$return &= $object->unregisterHook('header');
 
 	$langs = Language::getLanguages(false);
 	$old_messages = array();
