@@ -197,13 +197,13 @@ class Blockcustomerprivacy extends Module
 						'type' => 'textarea',
 						'lang' => true,
 						'autoload_rte' => true,
-						'label' => $this->l('Customer data privacy message for authentication page:'),
+						'label' => $this->l('Customer data privacy message for account creation form:'),
 						'name' => 'CUSTPRIV_MSG_AUTH',
 						'desc' => $this->l('The customer data privacy message will be displayed in the account creation form.').'<br>'.$this->l('Tip: If the customer privacy message is too long to be written directly in the form, you can add a link to one of your pages. This can easily be created via the "CMS" page under the "Preferences" menu.')
 					),
 					array(
 						'type' => 'switch',
-						'label' => $this->l('Display on identity (profile) page'),
+						'label' => $this->l('Display in customer area'),
 						'name' => 'CUSTPRIV_IDENTITY_PAGE',
 						'values' => array(
 									array(
@@ -222,9 +222,9 @@ class Blockcustomerprivacy extends Module
 						'type' => 'textarea',
 						'lang' => true,
 						'autoload_rte' => true,
-						'label' => $this->l('Customer data privacy message for identity page:'),
+						'label' => $this->l('Customer data privacy message for customer area:'),
 						'name' => 'CUSTPRIV_MSG_IDENTITY',
-						'desc' => $this->l('The customer data privacy message will be displayed in the account creation form.').'<br>'.$this->l('Tip: If the customer privacy message is too long to be written directly in the form, you can add a link to one of your pages. This can easily be created via the "CMS" page under the "Preferences" menu.')
+						'desc' => $this->l('The customer data privacy message will be displayed in the "Personal information" page, in the customer area.').'<br>'.$this->l('Tip: If the customer privacy message is too long to be written directly on the page, you can add a link to one of your other pages. This can easily be created via the "CMS" page under the "Preferences" menu.')
 					),
 				),
 				'submit' => array(
