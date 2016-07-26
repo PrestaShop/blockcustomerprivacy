@@ -45,7 +45,7 @@ class Blockcustomerprivacy extends Module
 
 		$this->displayName = $this->l('Customer data privacy block');
 		$this->description = $this->l('Adds a block displaying a message about a customer\'s privacy data.');
-		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
 
 		$this->_html = '';
 	}
